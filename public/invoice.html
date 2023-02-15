@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://unpkg.com/ ">
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Accounts Payable</title>
+    <script src="https://unpkg.com/alpinejs@3.6.0/dist/alpine.js"></script>
+  </head>
+  <body>
+    <div x-data="{
+      invoice_number: '',
+      vendor: '',
+      amount: '',
+      invoices: []
+    }">
+      <form x-on:submit.prevent="addInvoice">
+        <label for="invoice_number">Invoice Number:</label>
+        <input type="text" x-model="invoice_number" id="invoice_number">
+        <label for="vendor">Vendor:</label>
+        <input type="text" x-model="vendor" id="vendor">
+        <label for="amount">Amount:</label>
+        <input type="text" x-model="amount" id="amount">
+        <button type="submit">Add Invoice</button>
+      </form>
+      <table>
+        <thead>
+          <tr>
+            <th>Invoice Number</th>
+            <th>Vendor</th>
+            <th>Amount here:<th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="(invoice, index) in invoices" :key="index">
+            <tr>
+              <td x-text="invoice.invoice_number"></td>
+              <td x-text="invoice.vendor"></td>
+              <td x-text="invoice.amount"></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+    <script>
+      async function addInvoice() {
+        const invoice_number = document.querySelector('#invoice_number').value
+        const vendor = document.querySelector('#vendor').value
+        const amount = document.querySelector('#amount').value
+
+        const data = {
+          invoice_number,
+          vendor,
+          amount
+        }
+	console.log('data:'+data);
+        const response = await fetch('/api/invoices', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+
+        if (!response.ok) {
+          console.error(response.statusText)
+          return
+        }
+
+        document.querySelector('#invoice_number').value = ''
+        document.querySelector('#vendor').value = ''
+        document.querySelector('#amount').value = ''
+
+        getInvoices()
+      }
+
+      async function getInvoices() {
+        const response = await fetch('/api/invoices', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+
+        if (!response.ok) {
+          console.error(response.statusText)
+          return
+        }
+
+        const data = await response.json()
+
+        Alpine.store('invoices').replace(data)
+      }
+
+      getInvoices()
+
+      Alpine.store('invoices', [])
+    </script>
+  </body>
+</html>
+
