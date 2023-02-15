@@ -7,7 +7,6 @@ const port = 3000;
 const url = 'mongodb://127.0.0.1:27017';
 const dbName = 'accounts-payable';
 const collectionName = 'invoices';
-
 app.use(express.static(path.join(__dirname,'public')));
 
 app.use(bodyParser.json());
