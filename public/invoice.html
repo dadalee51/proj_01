@@ -52,15 +52,10 @@
     </div>
   </div>
   <script>
-    
     Alpine.store('invoices', []);
-
     getInvoices();
 
-    //clog('debug point');
-
     async function addInvoice() {
-      clog('addINvoice called.');
       const invoice_number = document.querySelector('#invoice_number').value
       const vendor = document.querySelector('#vendor').value
       const amount = document.querySelector('#amount').value
@@ -91,7 +86,6 @@
     }
 
     async function getInvoices() {
-      clog('getInvoices called.');
       const response = await fetch('/api/invoices', {
         method: 'GET',
         headers: {
@@ -103,14 +97,9 @@
         console.error(response.statusText)
         return
       }
-
       const data = await response.json()
-      clog('data acquired:' + data);
       Alpine.store('invoices', data);
-      clog('invoices changed.');
     }
-
   </script>
 </body>
-
 </html>
